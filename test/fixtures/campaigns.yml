@@ -6,6 +6,6 @@ one:
   description: MyText
 
 two:
-  name: MyString
-  slug: MyString
+  name: Another campaign
+  slug: another-campaign
   description: MyText

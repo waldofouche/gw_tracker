@@ -3,12 +3,13 @@
 module GuildWars
   module Import
     class Campaigns
-      def self.call(campaigns:)
-        new(campaigns).call
+      def self.call(campaigns:, report:)
+        new(campaigns, report).call
       end
 
-      def initialize(campaigns)
+      def initialize(campaigns, report)
         @campaigns = campaigns
+        @report = report
       end
 
       def call
@@ -21,6 +22,8 @@ module GuildWars
               wiki_page: data[:wiki_page],
               wiki_anchor: data[:wiki_anchor]
             )
+
+            @report.campaign!
           end
         end
       end

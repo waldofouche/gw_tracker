@@ -14,4 +14,6 @@ class Quest < ApplicationRecord
     dungeon: 7,
     repeatable: 8
   }
+
+  validates :name, presence: true, uniqueness: { scope: :region_id }
 end
