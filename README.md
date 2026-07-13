@@ -1,24 +1,48 @@
-# README
+# Guild Wars Tracker
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Rails application for importing Guild Wars campaign and quest metadata from the official wiki, then browsing it by campaign or in one catalogue.
 
-Things you may want to cover:
+## Requirements
 
-* Ruby version
+- Ruby `4.0.5` (see `.ruby-version`)
+- PostgreSQL 14 or newer running locally
+- Bundler
 
-* System dependencies
+## Setup
 
-* Configuration
+```sh
+bin/setup
+```
 
-* Database creation
+`bin/setup` installs Ruby dependencies, prepares the development database, and starts the development process. To set up without starting the server, run:
 
-* Database initialization
+```sh
+bin/setup --skip-server
+```
 
-* How to run the test suite
+Visit `http://localhost:3000` once the server is running.
 
-* Services (job queues, cache servers, search engines, etc.)
+## Importing wiki data
 
-* Deployment instructions
+Import the campaign index and available quest pages with:
 
-* ...
+```sh
+bin/rails gw:import
+```
+
+The importer is safe to run again: campaigns and quests are upserted using their wiki-derived identities. A failed campaign is reported while the importer continues with the remaining campaigns.
+
+## Development checks
+
+```sh
+bin/rails test
+bin/rubocop
+bin/brakeman --quiet --no-pager
+bin/ci
+```
+
+`bin/ci` runs setup, style, security, tests, and seed checks. It requires PostgreSQL and network access for the advisory audit.
+
+## Deployment
+
+The included Dockerfile produces a production image. It expects `RAILS_MASTER_KEY` at runtime and follows the Kamal configuration in `config/deploy.yml`.

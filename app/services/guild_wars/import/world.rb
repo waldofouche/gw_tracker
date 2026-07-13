@@ -18,6 +18,10 @@ module GuildWars
       end
 
       def initialize(client:, target:, campaign:, debug:)
+        unless %i[all campaigns quests].include?(target)
+          raise ArgumentError, "Unsupported import target: #{target.inspect}"
+        end
+
         @client = client
         @target = target
         @campaign = campaign

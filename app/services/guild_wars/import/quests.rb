@@ -4,23 +4,26 @@ module GuildWars
   module Import
     class Quests
       def self.call(campaign:, quests:, report:)
-  new(campaign, quests, report).call
-end
+        new(campaign, quests, report).call
+      end
 
-def initialize(campaign, quests, report)
-  @campaign = campaign
-  @quests = quests
-  @report = report
-end
+      def initialize(campaign, quests, report)
+        @campaign = campaign
+        @quests = quests
+        @report = report
+      end
 
       def call
+        imported_regions = Set.new
+
         @quests.each do |data|
-          region = Region.find_or_create_by!(
+          region = Region.find_or_initialize_by(
             campaign: @campaign,
             name: clean(data[:location])
           )
+          region.save!
 
-          @report.region!
+          @report.region! if imported_regions.add?(region.id)
 
           quest = Quest.find_or_initialize_by(
             region: region,

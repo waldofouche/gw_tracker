@@ -3,16 +3,13 @@
 module GuildWars
   module Wiki
     class CampaignParser
-      CAMPAIGN_PATTERN = /
-        Guild\ Wars\
-        (?<name>
-          Prophecies|
-          Factions|
-          Nightfall|
-          Eye\ of\ the\ North|
-          Beyond
-        )
-      /x.freeze
+      CAMPAIGN_PATTERN = /\AGuild[ ]Wars[ ](?:
+        Prophecies|
+        Factions|
+        Nightfall|
+        Eye[ ]of[ ]the[ ]North|
+        Beyond
+      )\z/x.freeze
 
       def initialize(html)
         @doc = Nokogiri::HTML(html)
@@ -33,7 +30,7 @@ module GuildWars
             wiki_anchor: href.delete_prefix("#"),
             wiki_page: wiki_page(clean_name)
           }
-        end.uniq { |campaign| campaign[:slug] }
+        end.uniq { |campaign| campaign[:slug] }.sort_by { |campaign| campaign[:slug] }
       end
 
       private
