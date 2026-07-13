@@ -1,0 +1,59 @@
+<% content_for :title, "All quests · Guild Wars Tracker" %>
+
+<main class="page-shell">
+  <header class="site-header">
+    <%= link_to root_path, class: "brand" do %>
+      <span class="brand-mark">GW</span>
+      <span>Guild Wars Tracker</span>
+    <% end %>
+    <nav aria-label="Primary navigation">
+      <%= link_to "Campaigns", campaigns_path, class: "nav-link" %>
+      <%= link_to "All quests", quests_path, class: "nav-link active" %>
+    </nav>
+  </header>
+
+  <section class="hero compact">
+    <p class="eyebrow">Quest catalogue</p>
+    <h1>All quests</h1>
+    <p>
+      <%= pluralize(@quests.size, "quest") %>
+      <%= @selected_campaign ? "in #{@selected_campaign.name}." : "across your imported campaigns." %>
+    </p>
+  </section>
+
+  <%= form_with url: quests_path, method: :get, class: "quest-filter", data: { auto_submit: true } do %>
+    <div>
+      <%= label_tag :campaign_id, "Campaign" %>
+      <%= select_tag :campaign_id,
+          options_from_collection_for_select(@campaigns, :id, :name, @selected_campaign&.id),
+          include_blank: "All campaigns" %>
+    </div>
+    <%= submit_tag "Filter quests" %>
+    <% if @selected_campaign %>
+      <%= link_to "Clear filter", quests_path, class: "clear-filter" %>
+    <% end %>
+  <% end %>
+
+  <% if @quests.any? %>
+    <section class="all-quests" aria-label="All quests">
+      <% @quests.each do |quest| %>
+        <article class="quest-row">
+          <div>
+            <p class="quest-type"><%= quest.quest_type&.humanize || "Quest" %> · <%= link_to quest.region.campaign.name, campaign_path(quest.region.campaign) %></p>
+            <h2><%= quest.name %></h2>
+            <p class="quest-location"><%= quest.region.name %></p>
+            <% if quest.description.present? %><p class="quest-description"><%= quest.description %></p><% end %>
+          </div>
+          <% if quest.given_by.present? || quest.given_at.present? %>
+            <p class="quest-meta"><%= [quest.given_by, quest.given_at].compact.join(" · ") %></p>
+          <% end %>
+        </article>
+      <% end %>
+    </section>
+  <% else %>
+    <section class="empty-state">
+      <h2><%= @selected_campaign ? "No quests found" : "No quests imported yet" %></h2>
+      <p><%= @selected_campaign ? "No quests have been imported for this campaign." : "Import quest data to build your catalogue." %></p>
+    </section>
+  <% end %>
+</main>
