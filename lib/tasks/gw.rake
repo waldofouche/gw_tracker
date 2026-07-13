@@ -24,7 +24,7 @@ namespace :gw do
     unless report.success?
       puts
       puts "Import failed:"
-      
+
       report.errors.each do |error|
         puts " - #{error[:message]}"
       end

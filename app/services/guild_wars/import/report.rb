@@ -46,7 +46,7 @@ module GuildWars
 
       def summary
         <<~SUMMARY
-          
+
           ============================
           Guild Wars Import Report
           ============================
