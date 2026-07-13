@@ -15,8 +15,24 @@
   <section class="hero compact">
     <p class="eyebrow">Quest catalogue</p>
     <h1>All quests</h1>
-    <p><%= pluralize(@quests.size, "quest") %> across your imported campaigns.</p>
+    <p>
+      <%= pluralize(@quests.size, "quest") %>
+      <%= @selected_campaign ? "in #{@selected_campaign.name}." : "across your imported campaigns." %>
+    </p>
   </section>
+
+  <%= form_with url: quests_path, method: :get, class: "quest-filter" do %>
+    <div>
+      <%= label_tag :campaign_id, "Campaign" %>
+      <%= select_tag :campaign_id,
+          options_from_collection_for_select(@campaigns, :id, :name, @selected_campaign&.id),
+          include_blank: "All campaigns" %>
+    </div>
+    <%= submit_tag "Filter quests" %>
+    <% if @selected_campaign %>
+      <%= link_to "Clear filter", quests_path, class: "clear-filter" %>
+    <% end %>
+  <% end %>
 
   <% if @quests.any? %>
     <section class="all-quests" aria-label="All quests">
@@ -36,8 +52,8 @@
     </section>
   <% else %>
     <section class="empty-state">
-      <h2>No quests imported yet</h2>
-      <p>Import quest data to build your catalogue.</p>
+      <h2><%= @selected_campaign ? "No quests found" : "No quests imported yet" %></h2>
+      <p><%= @selected_campaign ? "No quests have been imported for this campaign." : "Import quest data to build your catalogue." %></p>
     </section>
   <% end %>
 </main>
