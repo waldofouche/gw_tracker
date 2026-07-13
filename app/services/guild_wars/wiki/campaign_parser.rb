@@ -4,7 +4,7 @@ module GuildWars
   module Wiki
     class CampaignParser
       CAMPAIGN_PATTERN = /
-        Guild\ Wars\ 
+        Guild\ Wars\
         (?<name>
           Prophecies|
           Factions|
