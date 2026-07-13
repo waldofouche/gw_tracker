@@ -1,0 +1,43 @@
+<% content_for :title, "All quests · Guild Wars Tracker" %>
+
+<main class="page-shell">
+  <header class="site-header">
+    <%= link_to root_path, class: "brand" do %>
+      <span class="brand-mark">GW</span>
+      <span>Guild Wars Tracker</span>
+    <% end %>
+    <nav aria-label="Primary navigation">
+      <%= link_to "Campaigns", campaigns_path, class: "nav-link" %>
+      <%= link_to "All quests", quests_path, class: "nav-link active" %>
+    </nav>
+  </header>
+
+  <section class="hero compact">
+    <p class="eyebrow">Quest catalogue</p>
+    <h1>All quests</h1>
+    <p><%= pluralize(@quests.size, "quest") %> across your imported campaigns.</p>
+  </section>
+
+  <% if @quests.any? %>
+    <section class="all-quests" aria-label="All quests">
+      <% @quests.each do |quest| %>
+        <article class="quest-row">
+          <div>
+            <p class="quest-type"><%= quest.quest_type&.humanize || "Quest" %> · <%= link_to quest.region.campaign.name, campaign_path(quest.region.campaign) %></p>
+            <h2><%= quest.name %></h2>
+            <p class="quest-location"><%= quest.region.name %></p>
+            <% if quest.description.present? %><p class="quest-description"><%= quest.description %></p><% end %>
+          </div>
+          <% if quest.given_by.present? || quest.given_at.present? %>
+            <p class="quest-meta"><%= [quest.given_by, quest.given_at].compact.join(" · ") %></p>
+          <% end %>
+        </article>
+      <% end %>
+    </section>
+  <% else %>
+    <section class="empty-state">
+      <h2>No quests imported yet</h2>
+      <p>Import quest data to build your catalogue.</p>
+    </section>
+  <% end %>
+</main>

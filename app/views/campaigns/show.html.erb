@@ -1,0 +1,59 @@
+<% content_for :title, "#{@campaign.name} · Guild Wars Tracker" %>
+
+<main class="page-shell">
+  <header class="site-header">
+    <%= link_to root_path, class: "brand" do %>
+      <span class="brand-mark">GW</span>
+      <span>Guild Wars Tracker</span>
+    <% end %>
+    <nav aria-label="Primary navigation">
+      <%= link_to "Campaigns", campaigns_path, class: "nav-link active" %>
+      <%= link_to "All quests", quests_path, class: "nav-link" %>
+    </nav>
+  </header>
+
+  <section class="campaign-heading">
+    <%= link_to "← All campaigns", campaigns_path, class: "back-link" %>
+    <p class="eyebrow">Campaign</p>
+    <h1><%= @campaign.name %></h1>
+    <% if @campaign.description.present? %>
+      <p><%= @campaign.description %></p>
+    <% end %>
+  </section>
+
+  <% if @regions.any? %>
+    <div class="region-list">
+      <% @regions.each do |region| %>
+        <section class="region-section">
+          <div class="region-heading">
+            <h2><%= region.name %></h2>
+            <span><%= pluralize(region.quests.size, "quest") %></span>
+          </div>
+          <% if region.quests.any? %>
+            <div class="quest-list">
+              <% region.quests.sort_by { |quest| [quest.position || Float::INFINITY, quest.name.to_s] }.each do |quest| %>
+                <article class="quest-row">
+                  <div>
+                    <p class="quest-type"><%= quest.quest_type&.humanize || "Quest" %></p>
+                    <h3><%= quest.name %></h3>
+                    <% if quest.description.present? %><p class="quest-description"><%= quest.description %></p><% end %>
+                  </div>
+                  <% if quest.given_by.present? || quest.given_at.present? %>
+                    <p class="quest-meta"><%= [quest.given_by, quest.given_at].compact.join(" · ") %></p>
+                  <% end %>
+                </article>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="muted">No quests have been imported for this region.</p>
+          <% end %>
+        </section>
+      <% end %>
+    </div>
+  <% else %>
+    <section class="empty-state">
+      <h2>No regions imported yet</h2>
+      <p>This campaign will appear here once its regions and quests are available.</p>
+    </section>
+  <% end %>
+</main>

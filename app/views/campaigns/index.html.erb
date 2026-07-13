@@ -1,0 +1,42 @@
+<% content_for :title, "Campaigns · Guild Wars Tracker" %>
+
+<main class="page-shell">
+  <header class="site-header">
+    <%= link_to root_path, class: "brand" do %>
+      <span class="brand-mark">GW</span>
+      <span>Guild Wars Tracker</span>
+    <% end %>
+    <nav aria-label="Primary navigation">
+      <%= link_to "Campaigns", campaigns_path, class: "nav-link active" %>
+      <%= link_to "All quests", quests_path, class: "nav-link" %>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">Your adventure guide</p>
+    <h1>Campaigns</h1>
+    <p>Explore every campaign and the quests that make up its journey.</p>
+  </section>
+
+  <% if @campaigns.any? %>
+    <section class="campaign-grid" aria-label="Campaigns">
+      <% @campaigns.each do |campaign| %>
+        <% quest_count = campaign.regions.sum { |region| region.quests.size } %>
+        <%= link_to campaign_path(campaign), class: "campaign-card" do %>
+          <div class="card-topline">
+            <span>Campaign</span>
+            <span><%= pluralize(quest_count, "quest") %></span>
+          </div>
+          <h2><%= campaign.name %></h2>
+          <p><%= campaign.description.presence || "Browse regions and quests in this campaign." %></p>
+          <span class="card-action">View campaign <span aria-hidden="true">→</span></span>
+        <% end %>
+      <% end %>
+    </section>
+  <% else %>
+    <section class="empty-state">
+      <h2>No campaigns imported yet</h2>
+      <p>Import Guild Wars data to start browsing campaigns and quests.</p>
+    </section>
+  <% end %>
+</main>

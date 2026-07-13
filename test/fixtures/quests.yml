@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  region: one
+  name: MyString
+  quest_type: 1
+  position: 1
+  description: MyText
+
+two:
+  region: two
+  name: MyString
+  quest_type: 1
+  position: 1
+  description: MyText
