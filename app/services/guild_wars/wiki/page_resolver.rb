@@ -11,7 +11,20 @@ module GuildWars
       }.freeze
 
       def self.quest_page(campaign)
-        QUEST_PAGES[campaign.slug]
+        page = QUEST_PAGES[campaign.slug]
+
+        if page
+          Rails.logger.debug(
+            "[GuildWars::Wiki::PageResolver] resolved campaign=#{campaign.slug.inspect} page=#{page.inspect}"
+          )
+        else
+          Rails.logger.warn(
+            "[GuildWars::Wiki::PageResolver] no quest page for campaign=#{campaign.slug.inspect} " \
+            "(known slugs: #{QUEST_PAGES.keys.inspect})"
+          )
+        end
+
+        page
       end
     end
   end
