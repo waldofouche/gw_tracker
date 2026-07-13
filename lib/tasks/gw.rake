@@ -17,6 +17,9 @@ namespace :gw do
 
     BANNER
 
+    Rails.logger = ActiveSupport::TaggedLogging.new(Logger.new($stdout))
+  Rails.logger.level = Rails.env.production? ? Logger::INFO : Logger::DEBUG
+
     report = GuildWars::Import::World.call
 
     puts report.summary

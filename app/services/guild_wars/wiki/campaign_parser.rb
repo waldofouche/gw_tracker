@@ -13,24 +13,56 @@ module GuildWars
 
       def initialize(html)
         @doc = Nokogiri::HTML(html)
+        Rails.logger.debug(
+          "[GuildWars::Wiki::CampaignParser] initialized with html length=#{html&.length}"
+        )
       end
 
       def campaigns
-        @doc.css("a[href^='#Guild_Wars_']").filter_map do |link|
+        candidates = @doc.css("a[href^='#Guild_Wars_']")
+        Rails.logger.debug(
+          "[GuildWars::Wiki::CampaignParser] found #{candidates.size} anchor(s) matching href selector"
+        )
+
+        parsed = candidates.filter_map do |link|
           name = clean_text(link.text)
           href = link.attribute("href")&.value
 
-          next unless name.match?(CAMPAIGN_PATTERN)
+          unless name.match?(CAMPAIGN_PATTERN)
+            Rails.logger.debug(
+              "[GuildWars::Wiki::CampaignParser] skipping anchor name=#{name.inspect} href=#{href.inspect} (no pattern match)"
+            )
+            next
+          end
 
           clean_name = name.sub(/^\d+\s*/, "")
 
-          {
+          campaign = {
             name: clean_name,
             slug: slugify(clean_name),
             wiki_anchor: href.delete_prefix("#"),
             wiki_page: wiki_page(clean_name)
           }
-        end.uniq { |campaign| campaign[:slug] }.sort_by { |campaign| campaign[:slug] }
+
+          Rails.logger.debug("[GuildWars::Wiki::CampaignParser] matched campaign=#{campaign.inspect}")
+          campaign
+        end
+
+        before_dedup = parsed.size
+        result = parsed.uniq { |c| c[:slug] }.sort_by { |c| c[:slug] }
+
+        if before_dedup != result.size
+          Rails.logger.warn(
+            "[GuildWars::Wiki::CampaignParser] deduped #{before_dedup - result.size} duplicate slug(s)"
+          )
+        end
+
+        Rails.logger.info(
+          "[GuildWars::Wiki::CampaignParser] parsed #{result.size} unique campaign(s): " \
+          "#{result.map { |c| c[:slug] }.inspect}"
+        )
+
+        result
       end
 
       private

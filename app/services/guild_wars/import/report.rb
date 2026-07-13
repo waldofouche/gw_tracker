@@ -31,13 +31,18 @@ module GuildWars
 
       def skip!(message)
         @skipped << message
+        Rails.logger.debug("[GuildWars::Import::Report] skipped: #{message}")
       end
 
       def error!(message, exception = nil)
-        @errors << {
-          message: message,
-          exception: exception
-        }
+        @errors << { message: message, exception: exception }
+
+        if exception
+          Rails.logger.error("[GuildWars::Import::Report] error: #{message} (#{exception.class}: #{exception.message})")
+          Rails.logger.debug(exception.backtrace&.first(10)&.join("\n"))
+        else
+          Rails.logger.error("[GuildWars::Import::Report] error: #{message}")
+        end
       end
 
       def success?
@@ -45,11 +50,15 @@ module GuildWars
       end
 
       def summary
+        status = success? ? "SUCCESS" : "FAILED"
+
         <<~SUMMARY
 
           ============================
           Guild Wars Import Report
           ============================
+
+          Status:    #{status}
 
           Campaigns: #{@campaigns}
           Regions:   #{@regions}
@@ -63,12 +72,40 @@ module GuildWars
 
       def print
         puts summary
+        Rails.logger.info(summary)
 
-        return if success?
+        print_skipped
+        print_errors
+      end
 
-        puts "Errors:"
+      private
+
+      def print_skipped
+        return if @skipped.empty?
+
+        puts "Skipped (#{@skipped.size}):"
+        @skipped.each do |message|
+          puts "  - #{message}"
+          Rails.logger.warn("[GuildWars::Import::Report] skipped: #{message}")
+        end
+      end
+
+      def print_errors
+        return if @errors.empty?
+
+        puts "Errors (#{@errors.size}):"
         @errors.each do |error|
-          puts " - #{error[:message]}"
+          puts "  - #{error[:message]}"
+
+          if error[:exception]
+            puts "    #{error[:exception].class}: #{error[:exception].message}"
+            Rails.logger.error(
+              "[GuildWars::Import::Report] #{error[:message]} — " \
+              "#{error[:exception].class}: #{error[:exception].message}"
+            )
+          else
+            Rails.logger.error("[GuildWars::Import::Report] #{error[:message]}")
+          end
         end
       end
     end

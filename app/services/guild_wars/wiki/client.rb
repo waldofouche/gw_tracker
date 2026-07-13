@@ -22,12 +22,23 @@ module GuildWars
       end
 
       def get(path)
-        response = @client.get(path)
+  response = @client.get(path)
 
-        raise "Wiki request failed #{response.status}" unless response.success?
+  unless response.success?
+    Rails.logger.error(
+      "[GuildWars::Wiki::Client] GET #{path} failed: status=#{response.status} " \
+      "body=#{response.body.to_s.truncate(500)}"
+    )
+    Rails.logger.debug(
+      "[GuildWars::Wiki::Client] response headers=#{response.headers.to_h.inspect}"
+    )
+    raise "Wiki request failed #{response.status}"
+  end
 
-        response.body
-      end
+  Rails.logger.debug("[GuildWars::Wiki::Client] GET #{path} ok length=#{response.body&.length}")
+
+  response.body
+end
     end
   end
 end
