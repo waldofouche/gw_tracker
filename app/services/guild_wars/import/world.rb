@@ -40,7 +40,7 @@ module GuildWars
       def import_quest_data
         campaigns =
           if @campaign
-            [ Campaign.find_by!(slug: @campaign) ]
+            [Campaign.find_by!(slug: @campaign)]
           else
             Campaign.find_each
           end

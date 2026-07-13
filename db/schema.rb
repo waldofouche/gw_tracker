@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_12_181139) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_12_195649) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_12_181139) do
     t.string "name"
     t.string "slug"
     t.datetime "updated_at", null: false
+    t.string "wiki_anchor"
+    t.string "wiki_page"
   end
 
   create_table "missions", force: :cascade do |t|
