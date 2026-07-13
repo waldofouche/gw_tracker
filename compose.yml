@@ -1,0 +1,38 @@
+services:
+  app:
+    image: ghcr.io/waldofouche/gw_tracker:sha-cd9595d
+    container_name: gw_tracker
+    ports:
+      - "3000:80"
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@db:5432/gw_tracker_production
+      CACHE_DATABASE_URL: postgres://postgres:postgres@db:5432/gw_tracker_production_cache
+      QUEUE_DATABASE_URL: postgres://postgres:postgres@db:5432/gw_tracker_production_queue
+      CABLE_DATABASE_URL: postgres://postgres:postgres@db:5432/gw_tracker_production_cable
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "true"
+      SECRET_KEY_BASE: change-me
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:17
+    container_name: gw_tracker_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gw_tracker_production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gw_tracker_production"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
