@@ -21,7 +21,7 @@
     </p>
   </section>
 
-  <%= form_with url: quests_path, method: :get, class: "quest-filter" do %>
+  <%= form_with url: quests_path, method: :get, class: "quest-filter", data: { auto_submit: true } do %>
     <div>
       <%= label_tag :campaign_id, "Campaign" %>
       <%= select_tag :campaign_id,
