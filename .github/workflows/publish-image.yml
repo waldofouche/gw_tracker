@@ -54,7 +54,7 @@ jobs:
       # They are provided by a third-party and are governed by separate terms
       # of service, privacy policy, and support documentation.
       - name: Build and push Docker image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/build-push-action@cb941d0b895b09c17fa011d41c411b33c752cf28
         with:
           context: .
           file: ./Dockerfile
